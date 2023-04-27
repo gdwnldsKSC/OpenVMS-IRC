@@ -82,7 +82,7 @@ OBJ_DIR = $(OUT_DIR).obj                                                      !a
 ! main target                                                                 !auto
 [$(OUT_DIR)]$(NAME).EXE :  -                                                  !auto
 [$(OBJ_DIR)]irc.obj                                                           !auto
-    CXXLINK $(LINKFLAGS) $(MMS$SOURCE_LIST)                                   !auto
+    LINK $(LINKFLAGS) $(MMS$SOURCE_LIST)                                   !auto
                                                                               !auto
 ! objects                                                                     !auto
 [$(OBJ_DIR)]irc.obj : irc.c $(INCLUDES)                                       !auto

@@ -26,3 +26,6 @@ It will prompt you for a nick, username, and channel to join.
 Username populates both ident and whois username field.
 
 
+## MMS BUILD FILE
+
+Works... ish. 
