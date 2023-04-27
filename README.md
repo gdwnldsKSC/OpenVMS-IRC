@@ -1,6 +1,6 @@
 ## Yet to be named OpenVMS IRC Client
 
-Currently can only receive from a single hard-coded channel and server IP.
+Currently can only receive from a single channel and server.
 
 Can't send messages yet. 
 
