@@ -10,7 +10,6 @@
 #include <netdb.h>
 #include <fcntl.h>
 
-#define SERVER_ADDRESS "IRC.SERVER.IP.ADDRESS.HERE"
 #define SERVER_PORT 6667
 #define BUFFER_SIZE 1024
 #define MESSAGE_SIZE 4096
