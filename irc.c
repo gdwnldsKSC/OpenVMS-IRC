@@ -39,18 +39,16 @@ user, join);
     send(client_socket, buf, len, 0);
 
     while (1) {
-        while (1) {
-            int n = recv(client_socket, buf, sizeof(buf) - 1, 0);
-            if (n < 0) {
-                perror("recv");
-                exit(1);
-            } else if (n == 0) {
-                break;
-            }
-            buf[n] = '\0';
-            printf("%s", buf);
-            fflush(stdout);
+        int n = recv(client_socket, buf, sizeof(buf) - 1, 0);
+        if (n < 0) {
+            perror("recv");
+            exit(1);
+        } else if (n == 0) {
+            break;
         }
+        buf[n] = '\0';
+        printf("%s", buf);
+        fflush(stdout);
     }
 
     close(client_socket);
