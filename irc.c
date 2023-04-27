@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 
 
     while (1) {
-        int n = recv(client_socket, buffer, sizeof(buf) - 1, 0);
+        int n = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
         if (n < 0) {
             perror("recv");
             exit(1);
