@@ -10,22 +10,15 @@ Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium
 given only DEC C / VMS C runtime provided libraries and functions used.
 
 
-## Assumptions:
-
-Using SYSTEM account
-
-Working in SYSMGR directory (default login directory for VMS SYSTEM user)
-
-Disk label is X86SYS (default for V9.2 and E9.2-1 on x86_64)
-
-VSI/HP/DEC C compiler installed and working
-
 ## What to do
 cc irc.c
 
 link irc.obj
 
 mcr DISK$X86SYS:[sys0.sysmgr]irc.exe irc.servername.com
+
+
+Modify path as required to where you placed irc.c
 
 ## Congrats, you now have read-only IRC.
 
