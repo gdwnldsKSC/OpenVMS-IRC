@@ -1,10 +1,13 @@
 ! header                                                                      !auto
 ! Do not modify this file. It may be overwritten automatically.               !auto
 ! includes                                                                    !auto
-INCLUDES=                                                                     !auto
+INCLUDES= -                                                                   !auto
+irc.h -                                                                       !auto
+[.modules]modules.h                                                           !auto
 ! sources                                                                     !auto
 SOURCES= -                                                                    !auto
-irc.c                                                                         !auto
+irc.c -                                                                       !auto
+snprintf_vms.c                                                                !auto
 ! dependencies                                                                !auto
 .FIRST                                                                        !auto
                                                                               !auto
@@ -81,9 +84,11 @@ OBJ_DIR = $(OUT_DIR).obj                                                      !a
                                                                               !auto
 ! main target                                                                 !auto
 [$(OUT_DIR)]$(NAME).EXE :  -                                                  !auto
-[$(OBJ_DIR)]irc.obj                                                           !auto
+[$(OBJ_DIR)]irc.obj -                                                         !auto
+[$(OBJ_DIR)]snprintf_vms.obj                                                  !auto
     LINK $(LINKFLAGS) $(MMS$SOURCE_LIST)                                   !auto
                                                                               !auto
 ! objects                                                                     !auto
 [$(OBJ_DIR)]irc.obj : irc.c $(INCLUDES)                                       !auto
+[$(OBJ_DIR)]snprintf_vms.obj : snprintf_vms.c $(INCLUDES)                     !auto
                                                                              

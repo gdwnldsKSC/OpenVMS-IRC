@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <fcntl.h>
+#include "modules/modules.h"
+#include "irc.h"
 
 #define SERVER_PORT 6667
 #define BUFFER_SIZE 1024
