@@ -17,6 +17,16 @@
 #define MESSAGE_SIZE 4096
 #define MESSAGE_BUFFER_SIZE 3
 
+void parse_incoming_message(int client_socket, char *message) {
+    if (strncmp(message, "PING", 4) == 0) {
+        char pong[BUFFER_SIZE];
+        snprintf(pong, sizeof(pong), "PONG%s", message + 4);
+        // for debug
+        printf(pong);
+        write(client_socket, pong, strlen(pong));
+    }
+}
+
 
 int main(int argc, char **argv) {
 	struct hostent *server;
@@ -73,7 +83,17 @@ int main(int argc, char **argv) {
             break;
         }
         buffer[n] = '\0';
-        printf("%s", buffer);
+
+        char *message_start = buffer;
+        char *message_end;
+
+        while ((message_end = strstr(message_start, "\r\n")) != NULL) {
+            *message_end = '\0';
+            parse_incoming_message(client_socket, message_start);
+            printf("%s\n", message_start);
+            message_start = message_end +2;
+        }
+
         fflush(stdout);
     }
 
