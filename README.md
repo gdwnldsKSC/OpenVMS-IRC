@@ -18,6 +18,8 @@ cc irc.c,snprintf_vms.c
 link irc.obj,snprintf_vms.obj  
 mcr DISK$X86SYS:[sys0.sysmgr]irc.exe irc.servername.com  
 
+Currently, on vax, you will need to CC/DEFINE="__VMS" instead of just cc  
+
 Modify path as required to where you placed the source/output EXE file  
 snprintf_vms.obj is not required 
 
@@ -37,6 +39,6 @@ almost useless on Itanium - it just brings along the deobfuscator, and doesn't
 exist at all on x86_64.   
 
 VSCode VMS-IDE is running this to build:
-MMS/EXTENDED_SYNTAX/DESCR=VMSIRC.mms/MACRO=("DEBUG=0","OUTDIR=out","NAME=VMSIRC","UNIXNAME=VMSIRC","CONFIG=RELEASE")
+MMS/EXTENDED_SYNTAX/DESCR=VMSIRC.mms/MACRO=("DEBUG=0","OUTDIR=out","NAME=VMSIRC","UNIXNAME=VMSIRC","CONFIG=RELEASE")  
 
 Shouldn't hurt other platforms, as no C++ code is in use
