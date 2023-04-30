@@ -18,15 +18,15 @@
 #define MESSAGE_BUFFER_SIZE 3
 
 void process_incoming_message(int client_socket, char *message) {
-    printf("Received message: %s\n", message);
-
+//    printf("Received message: %s\n", message);
+    printf("%s\n", message);
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
         snprintf(pong, sizeof(pong), "PONG%s\r\n", message + 4);
         printf("Sending PONG response: %s\n", pong);
         write(client_socket, pong, strlen(pong));
     } else {
-        printf("Message is not a PING event\n");
+ //       printf("Message is not a PING event\n");
     }
 }
 
@@ -53,7 +53,7 @@ int process_initial_messages(int client_socket) {
 
             if (strstr(message_start, " 001 ") != NULL) { // Welcome message received
                 registration_complete = 1;
-                printf("registration success!");
+//                printf("registration success!");
             }
 
             message_start = message_end + 2;
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
             break;
         }
         buffer[n] = '\0';
-        printf("Received data: %s\n", buffer);
+ //       printf("Received data: %s\n", buffer);
 
         char *message_start = buffer;
         char *message_end;
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
         while ((message_end = strstr(message_start, "\r\n")) != NULL) {
             *message_end = '\0';
             process_incoming_message(client_socket, message_start);
-            printf("%s\n", message_start);
+ //           printf("%s\n", message_start);
             message_start = message_end + 2;
         }
 
