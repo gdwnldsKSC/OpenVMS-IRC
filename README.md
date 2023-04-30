@@ -9,6 +9,9 @@ Whoops.
 Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium   
 given only DEC C / VMS C runtime provided libraries and functions used.
 
+## What's new
+
+Handles connecting to IRCDs that require a PING/PONG response session  
 
 ## What to do
 cc irc.c,snprintf_vms.c  

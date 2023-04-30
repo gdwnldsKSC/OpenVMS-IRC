@@ -17,16 +17,51 @@
 #define MESSAGE_SIZE 4096
 #define MESSAGE_BUFFER_SIZE 3
 
-void parse_incoming_message(int client_socket, char *message) {
+void process_incoming_message(int client_socket, char *message) {
+    printf("Received message: %s\n", message);
+
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
-        snprintf(pong, sizeof(pong), "PONG%s", message + 4);
-        // for debug
-        printf(pong);
+        snprintf(pong, sizeof(pong), "PONG%s\r\n", message + 4);
+        printf("Sending PONG response: %s\n", pong);
         write(client_socket, pong, strlen(pong));
+    } else {
+        printf("Message is not a PING event\n");
     }
 }
 
+int process_initial_messages(int client_socket) {
+    char buffer[BUFFER_SIZE];
+    int registration_complete = 0;
+
+    while (!registration_complete) {
+        int n = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+        if (n < 0) {
+            perror("recv");
+            exit(1);
+        } else if (n == 0) {
+            break;
+        }
+        buffer[n] = '\0';
+
+        char *message_start = buffer;
+        char *message_end;
+
+        while ((message_end = strstr(message_start, "\r\n")) != NULL) {
+            *message_end = '\0';
+            process_incoming_message(client_socket, message_start);
+
+            if (strstr(message_start, " 001 ") != NULL) { // Welcome message received
+                registration_complete = 1;
+                printf("registration success!");
+            }
+
+            message_start = message_end + 2;
+        }
+    }
+
+    return registration_complete;
+}
 
 int main(int argc, char **argv) {
 	struct hostent *server;
@@ -54,18 +89,22 @@ int main(int argc, char **argv) {
         perror("connect");
         exit(1);
     }
-	
+
     char nickname[BUFFER_SIZE];
     printf("Enter your nickname: ");
     scanf("%s", nickname);
     snprintf(buffer, BUFFER_SIZE, "NICK %s\r\n", nickname);
     write(client_socket, buffer, strlen(buffer));
-	
+
     char username[BUFFER_SIZE];
     printf("Enter your username: ");
     scanf("%s", username);
     snprintf(buffer, BUFFER_SIZE, "USER %s 0 * :%s\r\n", username, username);
-    write(client_socket, buffer, strlen(buffer));
+    write(client_socket, buffer, strlen(buffer)); 
+
+    usleep(50);
+
+    process_initial_messages(client_socket);
 
     char channel[BUFFER_SIZE];
     printf("Enter channel to join: ");
@@ -83,19 +122,21 @@ int main(int argc, char **argv) {
             break;
         }
         buffer[n] = '\0';
+        printf("Received data: %s\n", buffer);
 
         char *message_start = buffer;
         char *message_end;
 
         while ((message_end = strstr(message_start, "\r\n")) != NULL) {
             *message_end = '\0';
-            parse_incoming_message(client_socket, message_start);
+            process_incoming_message(client_socket, message_start);
             printf("%s\n", message_start);
-            message_start = message_end +2;
+            message_start = message_end + 2;
         }
 
         fflush(stdout);
     }
+
 
     close(client_socket);
 	
