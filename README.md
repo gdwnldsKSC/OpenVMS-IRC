@@ -36,4 +36,7 @@ file uses CXXLINK by default, so that is modified to just LINK since CXXLINK is
 almost useless on Itanium - it just brings along the deobfuscator, and doesn't   
 exist at all on x86_64.   
 
+VSCode VMS-IDE is running this to build:
+MMS/EXTENDED_SYNTAX/DESCR=VMSIRC.mms/MACRO=("DEBUG=0","OUTDIR=out","NAME=VMSIRC","UNIXNAME=VMSIRC","CONFIG=RELEASE")
+
 Shouldn't hurt other platforms, as no C++ code is in use
