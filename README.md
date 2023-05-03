@@ -22,7 +22,7 @@ cc irc.c,snprintf_vms.c
 link irc.obj,snprintf_vms.obj  
 mcr DISK$X86SYS:[sys0.sysmgr]irc.exe irc.servername.com  
 
-Currently, on vax, you will need to CC/DEFINE="__VMS" instead of just cc  
+Currently, on vax, you will need to CC/DEFINE="__VAX" instead of just cc  
 
 Modify path as required to where you placed the source/output EXE file  
 snprintf_vms.obj is not required 
