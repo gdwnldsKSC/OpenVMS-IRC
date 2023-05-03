@@ -6,3 +6,6 @@
 #define snprintf snprintf_vms
 int snprintf_vms(char *str, size_t len, const char *fmt, ...);
 #endif
+
+char *BANNER_DEFINITION = "%s   %s %s ***";
+char *BANNER_TOP = " *** stuff %s more stuff: %-42s";

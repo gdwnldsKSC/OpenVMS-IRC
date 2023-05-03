@@ -16,21 +16,24 @@
 #define BUFFER_SIZE 1024
 #define MESSAGE_SIZE 4096
 #define MESSAGE_BUFFER_SIZE 3
+#define BANNER_LENGTH 200
 
-void process_incoming_message(int client_socket, char *message) {
+void process_incoming_message(int client_socket, char *message, WINDOW *output) {
 //    printf("Received message: %s\n", message);
-    printf("%s\n", message);
+    waddstr(output, strcat(message, "\n"));
+    wrefresh(output);
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
         snprintf(pong, sizeof(pong), "PONG%s\r\n", message + 4);
-        printf("Sending PONG response: %s\n", pong);
+        waddstr(output, "Sending PONG response");
+        wrefresh(output);
         write(client_socket, pong, strlen(pong));
     } else {
  //       printf("Message is not a PING event\n");
     }
 }
 
-int process_initial_messages(int client_socket) {
+int process_initial_messages(int client_socket, WINDOW *output) {
     char buffer[BUFFER_SIZE];
     int registration_complete = 0;
 
@@ -49,7 +52,7 @@ int process_initial_messages(int client_socket) {
 
         while ((message_end = strstr(message_start, "\r\n")) != NULL) {
             *message_end = '\0';
-            process_incoming_message(client_socket, message_start);
+            process_incoming_message(client_socket, message_start, output);
 
             if (strstr(message_start, " 001 ") != NULL) { // Welcome message received
                 registration_complete = 1;
@@ -64,6 +67,29 @@ int process_initial_messages(int client_socket) {
 }
 
 int main(int argc, char **argv) {
+    WINDOW *output_window;
+    WINDOW *entry_window;
+
+    initscr();
+ //   noecho();
+    clear();
+
+    output_window = newwin(LINES - 2, COLS, 0, 0);
+    entry_window = newwin(2, COLS, LINES - 2, 0);
+
+    char banner[BANNER_LENGTH];
+    char banner_contents[512];
+    extern char *BANNER_DEFINITION;
+    extern char *BANNER_TOP;
+
+    sprintf(banner_contents, BANNER_DEFINITION, "NICK PLACEHOLDER", "PLACEHOLDER 2", "PLACEHOLDER 3");
+    sprintf(banner, BANNER_TOP, "placeholder", banner_contents);
+
+    mvwaddstr(entry_window, 0, 0, banner);
+
+    wrefresh(output_window);
+    wrefresh(entry_window);
+
 	struct hostent *server;
 	struct sockaddr_in server_addr;
 	char buffer[BUFFER_SIZE];
@@ -91,26 +117,43 @@ int main(int argc, char **argv) {
     }
 
     char nickname[BUFFER_SIZE];
-    printf("Enter your nickname: ");
-    scanf("%s", nickname);
+    mvwaddstr(entry_window, 1, 0, "Enter your nickname: ");
+    wgetstr(entry_window, nickname);
     snprintf(buffer, BUFFER_SIZE, "NICK %s\r\n", nickname);
     write(client_socket, buffer, strlen(buffer));
 
+    sprintf(banner_contents, BANNER_DEFINITION, nickname, "PLACEHOLDER 2", "PLACEHOLDER 3");
+    sprintf(banner, BANNER_TOP, "placeholder", banner_contents);
+
+    wclear(entry_window);
+    mvwaddstr(entry_window, 0, 0, banner);
+
+    wrefresh(entry_window);
+
     char username[BUFFER_SIZE];
-    printf("Enter your username: ");
-    scanf("%s", username);
+    mvwaddstr(entry_window, 1, 0, "Enter your username: ");
+    wrefresh(entry_window);
+    wgetstr(entry_window, username);
     snprintf(buffer, BUFFER_SIZE, "USER %s 0 * :%s\r\n", username, username);
     write(client_socket, buffer, strlen(buffer)); 
 
-    usleep(50);
-
-    process_initial_messages(client_socket);
+    process_initial_messages(client_socket, output_window);
 
     char channel[BUFFER_SIZE];
-    printf("Enter channel to join: ");
-    scanf("%s", channel);
+    mvwaddstr(entry_window, 1, 0, "Enter channel to join: ");
+    wrefresh(entry_window);
+    wgetstr(entry_window, channel);
     snprintf(buffer, BUFFER_SIZE, "JOIN %s\r\n", channel);
     write(client_socket, buffer, strlen(buffer));
+
+    memset(banner_contents, 0, strlen(banner_contents));
+    memset(banner, 0, strlen(banner));
+    sprintf(banner_contents, BANNER_DEFINITION, nickname, "PLACEHOLDER 2", channel);
+    sprintf(banner, BANNER_TOP, "placeholder", banner_contents);
+    wclear(entry_window);
+    mvwaddstr(entry_window, 0, 0, banner);
+
+    wrefresh(entry_window);
 
 
     while (1) {
@@ -129,7 +172,7 @@ int main(int argc, char **argv) {
 
         while ((message_end = strstr(message_start, "\r\n")) != NULL) {
             *message_end = '\0';
-            process_incoming_message(client_socket, message_start);
+            process_incoming_message(client_socket, message_start, output_window);
  //           printf("%s\n", message_start);
             message_start = message_end + 2;
         }

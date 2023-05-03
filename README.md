@@ -13,6 +13,10 @@ given only DEC C / VMS C runtime provided libraries and functions used.
 
 Handles connecting to IRCDs that require a PING/PONG response session  
 
+Hackish semi-working curses interface beginnings. Doesn't scroll output  
+from the connection yet, but displays nick and channel at the bottom in  
+preparation for user input/sending. 
+
 ## What to do
 cc irc.c,snprintf_vms.c  
 link irc.obj,snprintf_vms.obj  
