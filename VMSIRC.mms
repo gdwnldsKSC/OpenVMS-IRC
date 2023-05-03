@@ -10,6 +10,7 @@ SOURCES= -                                                                    !a
 irc.c -                                                                       !auto
 snprintf_vms.c -                                                              !auto
 [.modules]ctcp.c -                                                            !auto
+[.modules]inputbox.c -                                                        !auto
 [.modules]privmsg.c                                                           !auto
 ! dependencies                                                                !auto
 .FIRST                                                                        !auto
@@ -90,6 +91,7 @@ OBJ_DIR = $(OUT_DIR).obj                                                      !a
 [$(OBJ_DIR)]irc.obj -                                                         !auto
 [$(OBJ_DIR)]snprintf_vms.obj -                                                !auto
 [$(OBJ_DIR).modules]ctcp.obj -                                                !auto
+[$(OBJ_DIR).modules]inputbox.obj -                                            !auto
 [$(OBJ_DIR).modules]privmsg.obj                                               !auto
     LINK $(LINKFLAGS) $(MMS$SOURCE_LIST)                                   !auto
                                                                               !auto
@@ -97,5 +99,6 @@ OBJ_DIR = $(OUT_DIR).obj                                                      !a
 [$(OBJ_DIR)]irc.obj : irc.c $(INCLUDES)                                       !auto
 [$(OBJ_DIR)]snprintf_vms.obj : snprintf_vms.c $(INCLUDES)                     !auto
 [$(OBJ_DIR).modules]ctcp.obj : [.modules]ctcp.c $(INCLUDES)                   !auto
+[$(OBJ_DIR).modules]inputbox.obj : [.modules]inputbox.c $(INCLUDES)           !auto
 [$(OBJ_DIR).modules]privmsg.obj : [.modules]privmsg.c $(INCLUDES)             !auto
                                                                              
