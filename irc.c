@@ -10,25 +10,24 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include "modules/modules.h"
+#include "modules/constants.h"
 #include "irc.h"
 
-#define SERVER_PORT 6667
-#define BUFFER_SIZE 1024
-#define MESSAGE_SIZE 4096
-#define MESSAGE_BUFFER_SIZE 3
-#define BANNER_LENGTH 200
-
 void process_incoming_message(int client_socket, char *message, WINDOW *output) {
-    waddstr(output, strcat(message, "\n"));
-    wrefresh(output);
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
         snprintf(pong, sizeof(pong), "PONG%s\r\n", message + 4);
         waddstr(output, "Sending PONG response\n");
         wrefresh(output);
         write(client_socket, pong, strlen(pong));
+    } else if (strstr(message, " PRIVMSG ") != NULL) { // Check for PRIVMSG
+        privmsg_handler(client_socket, message, output);
     } else {
-        // nothing to do... yet
+        waddstr(output, message);
+        waddstr(output, "\n");
+        wrefresh(output);
+        // Display unhandled input. Useful to find out what to implement next and/or see
+        // unhandled server messages and types!
     }
 }
 
@@ -141,7 +140,7 @@ int main(int argc, char **argv) {
 
     wclear(entry_window);
     mvwaddstr(entry_window, 0, 0, banner);
-    
+
     char channel[BUFFER_SIZE];
     mvwaddstr(entry_window, 1, 0, "Enter channel to join: ");
     wrefresh(entry_window);
