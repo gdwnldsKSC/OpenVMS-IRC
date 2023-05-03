@@ -19,17 +19,16 @@
 #define BANNER_LENGTH 200
 
 void process_incoming_message(int client_socket, char *message, WINDOW *output) {
-//    printf("Received message: %s\n", message);
     waddstr(output, strcat(message, "\n"));
     wrefresh(output);
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
         snprintf(pong, sizeof(pong), "PONG%s\r\n", message + 4);
-        waddstr(output, "Sending PONG response");
+        waddstr(output, "Sending PONG response\n");
         wrefresh(output);
         write(client_socket, pong, strlen(pong));
     } else {
- //       printf("Message is not a PING event\n");
+        // nothing to do... yet
     }
 }
 
@@ -56,7 +55,6 @@ int process_initial_messages(int client_socket, WINDOW *output) {
 
             if (strstr(message_start, " 001 ") != NULL) { // Welcome message received
                 registration_complete = 1;
-//                printf("registration success!");
             }
 
             message_start = message_end + 2;
@@ -71,11 +69,13 @@ int main(int argc, char **argv) {
     WINDOW *entry_window;
 
     initscr();
- //   noecho();
     clear();
 
     output_window = newwin(LINES - 2, COLS, 0, 0);
     entry_window = newwin(2, COLS, LINES - 2, 0);
+
+    scrollok(output_window, TRUE);
+    wrapok(output_window, TRUE);
 
     char banner[BANNER_LENGTH];
     char banner_contents[512];
@@ -165,7 +165,6 @@ int main(int argc, char **argv) {
             break;
         }
         buffer[n] = '\0';
- //       printf("Received data: %s\n", buffer);
 
         char *message_start = buffer;
         char *message_end;
@@ -173,7 +172,6 @@ int main(int argc, char **argv) {
         while ((message_end = strstr(message_start, "\r\n")) != NULL) {
             *message_end = '\0';
             process_incoming_message(client_socket, message_start, output_window);
- //           printf("%s\n", message_start);
             message_start = message_end + 2;
         }
 
