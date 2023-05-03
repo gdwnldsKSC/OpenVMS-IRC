@@ -17,9 +17,12 @@ Beginnings of Curses interface! Output window scrolls properly, wraparound
 enabled, Nick and Channel displayed in the soon-to-be message sending/input  
 area. 
 
+CTCP handler added. Responds to VERSION query. Officially version 0.00.1 !
+
 ## What to do
-cc irc.c,snprintf_vms.c  
-link irc.obj,snprintf_vms.obj  
+
+cc cc irc.c,snprintf_vms.c,[.modules]privmsg.c,[.modules]ctcp.c    
+link irc.obj,snprintf_vms.obj,privmsg.obj,ctcp.obj  
 mcr DISK$X86SYS:[sys0.sysmgr]irc.exe irc.servername.com  
 
 Currently, on vax, you will need to CC/DEFINE="__VAX" instead of just cc  
