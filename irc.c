@@ -139,6 +139,9 @@ int main(int argc, char **argv) {
 
     process_initial_messages(client_socket, output_window);
 
+    wclear(entry_window);
+    mvwaddstr(entry_window, 0, 0, banner);
+    
     char channel[BUFFER_SIZE];
     mvwaddstr(entry_window, 1, 0, "Enter channel to join: ");
     wrefresh(entry_window);
