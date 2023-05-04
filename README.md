@@ -1,10 +1,14 @@
 ## Yet to be named OpenVMS IRC Client
 
-Currently can only receive from a single channel and server.
+Currently can only join a single server and channel.
 
-Can't send messages yet. 
+use /quit to exit the client or it'll jack up your terminal because 
+otherwise the curses interface isn't cleaned up. /quit takes a REALLY
+long time to process right now and is kind of broken-ish. consider it
+POC.
 
-Whoops. 
+In fact, don't use this at all right now really - it works, you connect
+send/receive/join channel/etc, but exiting is just a complete mess.
 
 Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium   
 given only DEC C / VMS C runtime provided libraries and functions used.
@@ -19,6 +23,9 @@ area.
 
 CTCP handler added. Responds to VERSION query. Officially version 0.00.1 !
 
+0.01.0: We can SEND messages to the channel we're in now! And we're threaded.
+More cleanup must be done. 
+
 ## What to do
 
 cc cc irc.c,snprintf_vms.c,[.modules]privmsg.c,[.modules]ctcp.c    
@@ -30,7 +37,7 @@ Currently, on vax, you will need to CC/DEFINE="__VAX" instead of just cc
 Modify path as required to where you placed the source/output EXE file  
 snprintf_vms.obj is not required 
 
-## Congrats, you now have read-only IRC.
+## Congrats, you now have single-channel IRC.
 
 It will prompt you for a nick, username, and channel to join.  
 Username populates both ident and whois username field.  

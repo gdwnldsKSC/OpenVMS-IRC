@@ -2,6 +2,8 @@
 #include "modules/constants.h"
 #include "irc.h"
 
+volatile bool gtfotime = false;
+
 void process_incoming_message(int client_socket, char *message, WINDOW *output) {
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
@@ -18,6 +20,41 @@ void process_incoming_message(int client_socket, char *message, WINDOW *output) 
         // Display unhandled input. Useful to find out what to implement next and/or see
         // unhandled server messages and types!
     }
+}
+
+typedef struct {
+    int client_socket;
+    WINDOW *entry_window;
+    char *channel;
+} thread_data_t;
+
+void *user_input_thread(void *arg) {
+    thread_data_t *data = (thread_data_t *)arg;
+    int client_socket = data->client_socket;
+    WINDOW *entry_window = data->entry_window;
+    char *channel = data->channel;
+    char input_message[BUFFER_SIZE];
+    char send_buffer[BUFFER_SIZE];
+
+    while (1) {
+        wmove(entry_window, 1, 0);
+        wclrtoeol(entry_window);
+        wrefresh(entry_window);
+        wgetstr(entry_window, input_message);
+
+        if (strlen(input_message) > 0) {
+            if (strcmp(input_message, "/quit") == 0) { 
+                gtfotime = true;
+                break;
+            } else {
+                snprintf(send_buffer, BUFFER_SIZE, "PRIVMSG %s :%s\r\n", channel, input_message);
+                write(client_socket, send_buffer, strlen(send_buffer));
+                memset(input_message, 0, BUFFER_SIZE); 
+            }
+        }
+    }
+
+    return NULL;
 }
 
 int process_initial_messages(int client_socket, WINDOW *output) {
@@ -70,7 +107,7 @@ int main(int argc, char **argv) {
     extern char *BANNER_DEFINITION;
     extern char *BANNER_TOP;
 
-    sprintf(banner_contents, BANNER_DEFINITION, "NICK PLACEHOLDER", "PLACEHOLDER 2", "PLACEHOLDER 3");
+    sprintf(banner_contents, BANNER_DEFINITION, "NICK", "*PLACEHOLDER*", "CHANNEL");
     sprintf(banner, BANNER_TOP, "placeholder", banner_contents);
 
     mvwaddstr(entry_window, 0, 0, banner);
@@ -110,7 +147,7 @@ int main(int argc, char **argv) {
     snprintf(buffer, BUFFER_SIZE, "NICK %s\r\n", nickname);
     write(client_socket, buffer, strlen(buffer));
 
-    sprintf(banner_contents, BANNER_DEFINITION, nickname, "PLACEHOLDER 2", "PLACEHOLDER 3");
+    sprintf(banner_contents, BANNER_DEFINITION, nickname, "*PLACEHOLDER*", "CHANNEL");
     sprintf(banner, BANNER_TOP, "placeholder", banner_contents);
 
     wclear(entry_window);
@@ -139,15 +176,19 @@ int main(int argc, char **argv) {
 
     memset(banner_contents, 0, strlen(banner_contents));
     memset(banner, 0, strlen(banner));
-    sprintf(banner_contents, BANNER_DEFINITION, nickname, "PLACEHOLDER 2", channel);
+    sprintf(banner_contents, BANNER_DEFINITION, nickname, "*PLACEHOLDER*", channel);
     sprintf(banner, BANNER_TOP, "placeholder", banner_contents);
     wclear(entry_window);
     mvwaddstr(entry_window, 0, 0, banner);
 
     wrefresh(entry_window);
 
+    pthread_t input_thread;
+    thread_data_t thread_data = {client_socket, entry_window, channel};
+    pthread_create(&input_thread, NULL, user_input_thread, &thread_data);
 
-    while (1) {
+
+    while (!gtfotime) {
         int n = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
         if (n < 0) {
             perror("recv");
@@ -169,8 +210,9 @@ int main(int argc, char **argv) {
         fflush(stdout);
     }
 
-
+    pthread_join(input_thread, NULL);
     close(client_socket);
+    endwin();
 	
     return 0;
 }
