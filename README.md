@@ -23,7 +23,7 @@ area.
 
 CTCP handler added. Responds to VERSION query. Officially version 0.00.1 !
 
-0.01.0: We can SEND messages to the channel we're in now! And we're threaded.
+0.01.0: We can SEND messages to the channel we're in now! And we're threaded.  
 More cleanup must be done. 
 
 ## What to do
