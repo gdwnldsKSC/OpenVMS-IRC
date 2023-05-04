@@ -2,16 +2,16 @@
 
 Currently can only join a single server and channel.
 
-use /quit to exit the client or it'll jack up your terminal because 
-otherwise the curses interface isn't cleaned up. /quit takes a REALLY
-long time to process right now and is kind of broken-ish. consider it
-POC.
+use /quit to exit the client or it'll jack up your terminal because  
+otherwise the curses interface isn't cleaned up. /quit takes a REALLY  
+long time to process right now and is kind of broken-ish. consider it  
+POC.  
 
-In fact, don't use this at all right now really - it works, you connect
-send/receive/join channel/etc, but exiting is just a complete mess.
+In fact, don't use this at all right now really - it works, you connect  
+send/receive/join channel/etc, but exiting is just a complete mess.  
 
-Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium   
-given only DEC C / VMS C runtime provided libraries and functions used.
+Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium    
+given only DEC C / VMS C runtime provided libraries and functions used.  
 
 ## What's new
 
