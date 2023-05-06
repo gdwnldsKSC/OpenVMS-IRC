@@ -3,6 +3,18 @@
 #include "irc.h"
 
 volatile bool gtfotime = false;
+volatile bool input_thread_status = false;
+
+uint32_t vms_condition_handler(uint32_t *signal_args, uint32_t *mech_args) {
+    uint32_t sig = signal_args[1];
+
+    if (sig == SS$_CONTROLY) {
+        gtfotime = true;
+        return SS$_CONTINUE;
+    }
+
+    return SS$_RESIGNAL;
+}
 
 void process_incoming_message(int client_socket, char *message, WINDOW *output) {
     if (strncmp(message, "PING", 4) == 0) {
@@ -89,12 +101,19 @@ int process_initial_messages(int client_socket, WINDOW *output) {
     return registration_complete;
 }
 
+void endwin_noreturn() {
+    endwin();
+}
+
 int main(int argc, char **argv) {
     WINDOW *output_window;
     WINDOW *entry_window;
 
     initscr();
     clear();
+    atexit(endwin_noreturn);
+
+    lib$establish(vms_condition_handler);
 
     output_window = newwin(LINES - 2, COLS, 0, 0);
     entry_window = newwin(2, COLS, LINES - 2, 0);
@@ -185,7 +204,9 @@ int main(int argc, char **argv) {
 
     pthread_t input_thread;
     thread_data_t thread_data = {client_socket, entry_window, channel};
-    pthread_create(&input_thread, NULL, user_input_thread, &thread_data);
+    if (pthread_create(&input_thread, NULL, user_input_thread, &thread_data) == 0) {
+        input_thread_status = true;
+    };
 
 
     while (!gtfotime) {
@@ -210,9 +231,10 @@ int main(int argc, char **argv) {
         fflush(stdout);
     }
 
-    pthread_join(input_thread, NULL);
+    if (input_thread_status) {
+        pthread_join(input_thread, NULL);
+    };
     close(client_socket);
-    endwin();
 	
     return 0;
 }
