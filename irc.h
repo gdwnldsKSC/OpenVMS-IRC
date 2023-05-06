@@ -16,6 +16,8 @@
 #include <lib$routines.h>
 #include <processes.h>
 #include <stsdef.h>
+#include <starlet.h>
+#include <descrip.h>
 
 // VAX (and pre 7.3-2 Alpha) don't have snprintf, so we bring one with us
 // in snprintf_vms.c - right now we only handle VAX breakage

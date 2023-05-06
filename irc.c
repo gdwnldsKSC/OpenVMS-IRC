@@ -106,6 +106,39 @@ void endwin_noreturn() {
 }
 
 int main(int argc, char **argv) {
+    char *subprocess_flag = getenv("SUBPROCESS_FLAG");
+    if (subprocess_flag == NULL) {
+        pid_t pid = vfork();
+        if (pid < 0) {
+            perror("vfork");
+            exit(1);
+        }
+
+        struct dsc$descriptor_s cmd_desc;
+
+        if (pid == 0) { 
+            putenv("SUBPROCESS_FLAG=1");
+            cmd_desc.dsc$w_length = strlen("SET TERMINAL /NOCONTROL=(Y,C)");
+            cmd_desc.dsc$a_pointer = "SET TERMINAL /NOCONTROL=(Y,C)";
+            cmd_desc.dsc$b_dtype = DSC$K_DTYPE_T;
+            cmd_desc.dsc$b_class = DSC$K_CLASS_S;
+            lib$spawn(&cmd_desc);
+            execl(argv[0], argv[0], (char *)0);
+            perror("execl");
+            exit(1);
+        } else { 
+            int status;
+            waitpid(pid, &status, 0);
+            if (status == 0) {
+                cmd_desc.dsc$w_length = strlen("SET TERMINAL /CONTROL=(Y,C)");
+                cmd_desc.dsc$a_pointer = "SET TERMINAL /CONTROL=(Y,C)";
+                lib$spawn(&cmd_desc);
+            }
+            exit(0);
+        }
+    }
+
+
     WINDOW *output_window;
     WINDOW *entry_window;
 
