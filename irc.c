@@ -118,11 +118,13 @@ int main(int argc, char **argv) {
 
         if (pid == 0) { 
             putenv("SUBPROCESS_FLAG=1");
-            cmd_desc.dsc$w_length = strlen("SET TERMINAL /NOCONTROL=(Y,C)");
-            cmd_desc.dsc$a_pointer = "SET TERMINAL /NOCONTROL=(Y,C)";
+
+            cmd_desc.dsc$w_length = strlen("SET NOCONTROL=Y");
+            cmd_desc.dsc$a_pointer = "SET NOCONTROL=Y";
             cmd_desc.dsc$b_dtype = DSC$K_DTYPE_T;
             cmd_desc.dsc$b_class = DSC$K_CLASS_S;
             lib$spawn(&cmd_desc);
+
             execl(argv[0], argv[0], (char *)0);
             perror("execl");
             exit(1);
@@ -130,8 +132,10 @@ int main(int argc, char **argv) {
             int status;
             waitpid(pid, &status, 0);
             if (status == 0) {
-                cmd_desc.dsc$w_length = strlen("SET TERMINAL /CONTROL=(Y,C)");
-                cmd_desc.dsc$a_pointer = "SET TERMINAL /CONTROL=(Y,C)";
+                cmd_desc.dsc$w_length = strlen("SET CONTROL=Y");
+                cmd_desc.dsc$a_pointer = "SET CONTROL=Y";
+                cmd_desc.dsc$b_dtype = DSC$K_DTYPE_T;
+                cmd_desc.dsc$b_class = DSC$K_CLASS_S;
                 lib$spawn(&cmd_desc);
             }
             exit(0);
