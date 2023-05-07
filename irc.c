@@ -116,19 +116,18 @@ int main(int argc, char **argv) {
 
         struct dsc$descriptor_s cmd_desc;
 
-        if (pid == 0) { 
+        if (pid == 0) {
+            printf("Subflag\n");
             putenv("SUBPROCESS_FLAG=1");
 
+            printf("set nocontrol");
             cmd_desc.dsc$w_length = strlen("SET NOCONTROL=Y");
             cmd_desc.dsc$a_pointer = "SET NOCONTROL=Y";
             cmd_desc.dsc$b_dtype = DSC$K_DTYPE_T;
             cmd_desc.dsc$b_class = DSC$K_CLASS_S;
             lib$spawn(&cmd_desc);
 
-            execl(argv[0], argv[0], (char *)0);
-            perror("execl");
-            exit(1);
-        } else { 
+        } else {
             int status;
             waitpid(pid, &status, 0);
             if (status == 0) {
