@@ -3,12 +3,10 @@
 Currently can only join a single server and channel.
 
 use /quit to exit the client or it'll jack up your terminal because  
-otherwise the curses interface isn't cleaned up. /quit takes a REALLY  
-long time to process right now and is kind of broken-ish. consider it  
-POC.  
-
-In fact, don't use this at all right now really - it works, you connect  
-send/receive/join channel/etc, but exiting is just a complete mess.  
+otherwise the curses interface isn't cleaned up. Easy fix though, just 
+run 'help' immediately after exiting. Resets and cleans up your term
+nicely. This, obviously, needs to be fixed....
+ 
 
 Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium    
 given only DEC C / VMS C runtime provided libraries and functions used.  
