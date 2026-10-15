@@ -32,8 +32,8 @@ void privmsg_handler(int client_socket, char *message, WINDOW *output) {
     } else {
         // Handle regular private or channel messages
         pthread_mutex_lock(&screen_mutex);
-        waddstr(output, message);
-        waddstr(output, "\n");
+        output_wrapped(output, message);
+        output_wrapped(output, "\n");
         wrefresh(output);
         pthread_mutex_unlock(&screen_mutex);
     }

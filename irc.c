@@ -187,12 +187,30 @@ int send_irc(int client_socket, const char *message, size_t length) {
     return result;
 }
 
+void output_wrapped(WINDOW *output, const char *text) {
+    int row, column;
+
+    for (; *text != '\0'; ++text) {
+        if (*text == '\r' && text[1] == '\n') continue;
+        getyx(output, row, column);
+        // Leave the final column free to avoid curses' implicit edge handling.
+        if (*text == '\n' || ((unsigned char)*text >= ' ' && column >= COLS - 1)) {
+            waddch(output, '\n');
+            // OpenVMS newline keeps the old column; reset it after advancing.
+            getyx(output, row, column);
+            wmove(output, row, 0);
+            if (*text == '\n') continue;
+        }
+        waddch(output, *text);
+    }
+}
+
 void process_incoming_message(int client_socket, char *message, WINDOW *output) {
     if (strncmp(message, "PING", 4) == 0) {
         char pong[BUFFER_SIZE];
         snprintf(pong, sizeof(pong), "PONG%s\r\n", message + 4);
         pthread_mutex_lock(&screen_mutex);
-        waddstr(output, "Sending PONG response\n");
+        output_wrapped(output, "Sending PONG response\n");
         wrefresh(output);
         pthread_mutex_unlock(&screen_mutex);
         send_irc(client_socket, pong, strlen(pong));
@@ -200,8 +218,8 @@ void process_incoming_message(int client_socket, char *message, WINDOW *output) 
         privmsg_handler(client_socket, message, output);
     } else {
         pthread_mutex_lock(&screen_mutex);
-        waddstr(output, message);
-        waddstr(output, "\n");
+        output_wrapped(output, message);
+        output_wrapped(output, "\n");
         wrefresh(output);
         pthread_mutex_unlock(&screen_mutex);
         // Display unhandled input. Useful to find out what to implement next and/or see

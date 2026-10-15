@@ -6,6 +6,7 @@
 
 extern pthread_mutex_t screen_mutex;
 int send_irc(int client_socket, const char *message, size_t length);
+void output_wrapped(WINDOW *output, const char *text);
 void ctcp_handler(int client_socket, const char *sender_nick, const char *ctcp_message, WINDOW *output);
 void privmsg_handler(int client_socket, char *message, WINDOW *output);
 int read_input_line(unsigned short terminal_channel, WINDOW *window,
