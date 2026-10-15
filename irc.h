@@ -12,13 +12,18 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <signal.h>
+#include <errno.h>
+#include <time.h>
+#include <ioctl.h>
 #include <ssdef.h>
 #include <lib$routines.h>
-#include <processes.h>
 #include <stsdef.h>
 #include <starlet.h>
 #include <descrip.h>
-#include <clidef.h>
+#include <iodef.h>
+#include <psldef.h>
+#include <libclidef.h>
 
 // VAX (and pre 7.3-2 Alpha) don't have snprintf, so we bring one with us
 // in snprintf_vms.c - right now we only handle VAX breakage

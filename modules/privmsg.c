@@ -31,8 +31,10 @@ void privmsg_handler(int client_socket, char *message, WINDOW *output) {
         ctcp_handler(client_socket, sender_nick, ctcp_start, output);
     } else {
         // Handle regular private or channel messages
+        pthread_mutex_lock(&screen_mutex);
         waddstr(output, message);
         waddstr(output, "\n");
         wrefresh(output);
+        pthread_mutex_unlock(&screen_mutex);
     }
 }

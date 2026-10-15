@@ -2,10 +2,13 @@
 
 Currently can only join a single server and channel.
 
-use /quit to exit the client or it'll jack up your terminal because  
-otherwise the curses interface isn't cleaned up. Easy fix though, just 
-run 'help' immediately after exiting. Resets and cleans up your term
-nicely. This, obviously, needs to be fixed....
+Use `/quit` or press Ctrl-Y to exit. Ctrl-Y also works at the nickname,
+username, and channel prompts and while waiting for the server. The client
+stops input, closes the connection, cleans up curses, and restores the previous
+DCL Ctrl-Y setting. No extra Enter or second Ctrl-Y is needed.
+
+Hostname lookup happens before the client changes the terminal or DCL controls,
+so DCL's normal interrupt behavior applies during DNS resolution.
  
 
 Only used on x86_64 so far, should compile on VAX, Alpha, and Itanium    
@@ -26,9 +29,11 @@ More cleanup must be done.
 
 ## What to do
 
-cc cc irc.c,snprintf_vms.c,[.modules]privmsg.c,[.modules]ctcp.c    
-link irc.obj,snprintf_vms.obj,privmsg.obj,ctcp.obj  
-mcr DISK$X86SYS:[sys0.sysmgr]irc.exe irc.servername.com  
+```
+cc irc.c,snprintf_vms.c,[.modules]privmsg.c,[.modules]ctcp.c,[.modules]inputbox.c
+link irc.obj,snprintf_vms.obj,privmsg.obj,ctcp.obj,inputbox.obj
+mcr DISK$X86SYS:[sys0.sysmgr]irc.exe irc.servername.com
+```
 
 Currently, on vax, you will need to CC/DEFINE="__VAX" instead of just cc  
 
