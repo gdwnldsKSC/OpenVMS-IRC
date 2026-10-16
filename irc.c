@@ -231,12 +231,15 @@ typedef struct {
     int client_socket;
     WINDOW *entry_window;
     char *channel;
+    WINDOW *output_window;
+    const char *nickname;
 } thread_data_t;
 
 void *user_input_thread(void *arg) {
     thread_data_t *data = (thread_data_t *)arg;
     int client_socket = data->client_socket;
     WINDOW *entry_window = data->entry_window;
+    WINDOW *output_window = data->output_window;
     char *channel = data->channel;
     char input_message[BUFFER_SIZE];
     char send_buffer[BUFFER_SIZE];
@@ -277,8 +280,18 @@ void *user_input_thread(void *arg) {
                          recipient, message);
                 send_irc(client_socket, send_buffer, strlen(send_buffer));
             } else {
+                if (strlen(channel) + strlen(input_message) + 13 > sizeof(send_buffer)) continue;
                 snprintf(send_buffer, BUFFER_SIZE, "PRIVMSG %s :%s\r\n", channel, input_message);
-                send_irc(client_socket, send_buffer, strlen(send_buffer));
+                if (send_irc(client_socket, send_buffer, strlen(send_buffer)) == 1) {
+                    pthread_mutex_lock(&screen_mutex);
+                    output_wrapped(output_window, "<");
+                    output_wrapped(output_window, data->nickname);
+                    output_wrapped(output_window, "> ");
+                    output_wrapped(output_window, input_message);
+                    output_wrapped(output_window, "\n");
+                    wrefresh(output_window);
+                    pthread_mutex_unlock(&screen_mutex);
+                }
                 memset(input_message, 0, BUFFER_SIZE); 
             }
         }
@@ -455,7 +468,7 @@ int main(int argc, char **argv) {
 
     wrefresh(entry_window);
 
-    thread_data_t thread_data = {client_socket, entry_window, channel};
+    thread_data_t thread_data = {client_socket, entry_window, channel, output_window, nickname};
     if (gtfotime) goto cleanup;
     status = pthread_create(&input_thread, NULL, user_input_thread, &thread_data);
     if (status != 0) {
