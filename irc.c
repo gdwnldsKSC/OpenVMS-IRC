@@ -258,6 +258,24 @@ void *user_input_thread(void *arg) {
             if (strcmp(input_message, "/quit") == 0) { 
                 request_quit();
                 break;
+            } else if (strncmp(input_message, "/msg", 4) == 0 &&
+                       (input_message[4] == ' ' || input_message[4] == '\0')) {
+                char *recipient = input_message + 4;
+                char *message;
+
+                while (*recipient == ' ') ++recipient;
+                message = strchr(recipient, ' ');
+                // Incomplete /msg commands must never be sent to the channel.
+                if (message == NULL) continue;
+                *message++ = '\0';
+                while (*message == ' ') ++message;
+                if (*message == '\0') continue;
+                // Include the IRC prefix, separator, CRLF, and terminating NUL.
+                if (strlen(recipient) + strlen(message) + 13 > sizeof(send_buffer)) continue;
+
+                snprintf(send_buffer, sizeof(send_buffer), "PRIVMSG %s :%s\r\n",
+                         recipient, message);
+                send_irc(client_socket, send_buffer, strlen(send_buffer));
             } else {
                 snprintf(send_buffer, BUFFER_SIZE, "PRIVMSG %s :%s\r\n", channel, input_message);
                 send_irc(client_socket, send_buffer, strlen(send_buffer));
